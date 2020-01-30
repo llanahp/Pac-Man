@@ -8,7 +8,7 @@ public class Colecionables : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        //prueba de acceso
         
     }
 
