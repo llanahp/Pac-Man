@@ -1,13 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class Enemigo : MonoBehaviour
 {
 	GameObject jugador;
-    public float moveSpeed = 2f;
+    public float moveSpeed = 0.5f;
     private Rigidbody2D rb;
-    private Vector2 movement;
 
     // Start is called before the first frame update
     void Start(){
@@ -17,15 +17,12 @@ public class Enemigo : MonoBehaviour
 
     // Update is called once per frame
     void Update(){
-        Vector3 direction = jugador.transform.position - transform.position;
-        
-        direction.Normalize();
-        movement = direction;
+      
     }
     private void FixedUpdate() {
-        moveCharacter(movement);
+
+        transform.position = Vector2.MoveTowards(transform.position, jugador.transform.position, moveSpeed * Time.deltaTime);
+
     }
-    void moveCharacter(Vector2 direction){
-        rb.MovePosition((Vector2)transform.position + (direction * moveSpeed * Time.deltaTime));
-    }
+   
 }
