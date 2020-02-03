@@ -28,7 +28,13 @@ public class Jugador : MonoBehaviour
 
     public static string minutos, segundos;
     private float tiempo = 270;
+    //colecionable
+    public static int ColecionablesRecogidos = 0;
+    public static bool col1 = false;
+    public static bool col2 = false;
+    public static bool col3 = false;
 
+    public static int posicion = 0;
 
     void Start()
     {
@@ -82,9 +88,18 @@ public class Jugador : MonoBehaviour
 
         if (other.gameObject.CompareTag("Coleccionable"))
         {
+          
+            ColecionablesRecogidos++;
+            if (ColecionablesRecogidos==3) {
+                posicion++;
+                col1 = true;
+                col2 = true;
+                col3 = true;
+                ColecionablesRecogidos = 0;
+            }
             puntuacion += 10;
             textoPuntuacion.text = "Puntuación: " + puntuacion;
-            other.gameObject.SetActive(false);
+            other.transform.position = new Vector2(999,999);
         }
 
 
