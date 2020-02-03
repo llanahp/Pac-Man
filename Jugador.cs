@@ -80,6 +80,10 @@ public class Jugador : MonoBehaviour
         {
             Time.timeScale = 0;
         }
+
+        teletransporte();
+       
+        
     }
 
     // Se ejecuta al entrar a un objeto con la opción isTrigger seleccionada
@@ -174,4 +178,17 @@ public class Jugador : MonoBehaviour
             vivo = false;
         }
     }
+
+    void teletransporte()
+    {
+        if (transform.position.x <= -8.581168f)
+        {
+            transform.position = new Vector2(8.22f, -0.3035613f);
+        }
+        if (transform.position.x >= 8.38f)
+        {
+            transform.position = new Vector2(-8.22f, -0.3035613f);
+        }
+    }
+   
 }
