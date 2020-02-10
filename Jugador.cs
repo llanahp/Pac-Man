@@ -20,21 +20,28 @@ public class Jugador : MonoBehaviour
     private Rigidbody2D rb;
 
     private int vidas = 2, corazones = 2;
-    bool vivo = true;
+    public static bool vivo = true;
 
-    int puntuacion = 0;
+    //int puntuacion = 0;
 
 
     public static string minutos, segundos;
-    private float tiempo = 270;
+    public static float tiempo = 150;
     //colecionable
     public static int ColecionablesRecogidos = 0;
     public static bool col1 = false;
     public static bool col2 = false;
     public static bool col3 = false;
+	Color color;
+
+	// Coleccionable especial variables utilizadas
+
+	private bool matar = false;
+	string segundosComiendo;
+
+
 
     public static int posicion = 0;
-
     private static bool relentizado = false;
     string segundoRelentizado;
 
@@ -67,7 +74,7 @@ public class Jugador : MonoBehaviour
         btnHome.onClick.AddListener(home);
         fuenteDeAudio = GetComponent<AudioSource>();
 
-     
+		 color = GetComponent<SpriteRenderer>().color;
 
     }
 
@@ -93,6 +100,11 @@ public class Jugador : MonoBehaviour
         {
             segundoRelentizado = segundos;
         }
+
+
+		
+
+
     }
     void FixedUpdate()
     {
@@ -129,15 +141,39 @@ public class Jugador : MonoBehaviour
 
         teletransporte();
 
+		// comprobacion para matar/comer a los Enemigo
+		if(matar){
+		
+			Matar();
+
+		}else{
+			segundosComiendo = segundos;
+
+		}
+
 
     }
+
+	void Matar(){
+
+		int total = int.Parse(segundos) + 5;
+        if (total.Equals(int.Parse(segundosComiendo)))
+        {
+
+            matar = false;
+			ColeccionableEsp.reaparecer = true;
+			GetComponent<SpriteRenderer>().color = color;
+			
+        }
+	
+	}
 
     // Se ejecuta al entrar a un objeto con la opción isTrigger seleccionada
     void OnTriggerEnter2D(Collider2D other)
     {
         if (other.gameObject.CompareTag("Coleccionable"))
         {
-            fuenteDeAudio.clip = recolectarMoneda;
+           fuenteDeAudio.clip = recolectarMoneda;
             fuenteDeAudio.Play();
 
             ColecionablesRecogidos++;
@@ -149,21 +185,57 @@ public class Jugador : MonoBehaviour
                 col3 = true;
                 ColecionablesRecogidos = 0;
             }
-            puntuacion += 10;
-            textoPuntuacion.text = "Puntuación: " + puntuacion;
+            GameManager.puntuacion += 10;
+            textoPuntuacion.text = "Puntuación: " + GameManager.puntuacion;
             other.transform.position = new Vector2(999, 999);
+
+			GameManager.ContadorColeccionable++;
         }
+
+		if (other.gameObject.CompareTag("Coleccionable_especial"))
+        {
+            fuenteDeAudio.clip = recolectarMoneda;
+            fuenteDeAudio.Play();
+
+			GetComponent<SpriteRenderer>().color = new Color(1,1,1);
+			matar = true;
+
+
+            GameManager.puntuacion += 100;
+            textoPuntuacion.text = "Puntuación: " + GameManager.puntuacion;
+            other.transform.position = new Vector2(999, 999);
+
+			GameManager.ContadorColeccionable++;
+        }
+
+
+
         if (other.gameObject.CompareTag("Enemigo"))
         {
-            bajarVida();
-            transform.position = new Vector2(-7.75f, -1.64f);
+			fuenteDeAudio.clip = tocarEnemigo;
+            fuenteDeAudio.Play();
+			if(!matar){
+				bajarVida();
+				GameManager.puntuacion -= 20;
+				transform.position = new Vector2(-7.75f, -1.64f);
+			}else{
+				
+				GameManager.puntuacion += 50;
+				Vector2 actual = other.transform.position;
+				other.transform.position = new Vector2(999,999);
+				GameManager.ContadorEnemigos++;
+			}
+			textoPuntuacion.text = "Puntuación: " + GameManager.puntuacion;
+
+			
+            
         }
         if (other.gameObject.CompareTag("trampa"))
         {
             
             other.transform.position = new Vector2(999, 999);
-            puntuacion -= 20;
-            textoPuntuacion.text = "Puntuación: " + puntuacion;
+            GameManager.puntuacion -= 20;
+            textoPuntuacion.text = "Puntuación: " + GameManager.puntuacion;
             relentizado = true;
             fuenteDeAudio.clip = trampa;
             fuenteDeAudio.Play();
@@ -171,8 +243,8 @@ public class Jugador : MonoBehaviour
         if (other.gameObject.CompareTag("trampaVida"))
         {
             other.transform.position = new Vector2(999, 999);
-            puntuacion -= 40;
-            textoPuntuacion.text = "Puntuación: " + puntuacion;
+            GameManager.puntuacion -= 40;
+            textoPuntuacion.text = "Puntuación: " + GameManager.puntuacion;
             bajarVida();
             fuenteDeAudio.clip = trampa;
             fuenteDeAudio.Play();
@@ -180,14 +252,15 @@ public class Jugador : MonoBehaviour
         if (other.gameObject.CompareTag("sumarVida"))
         {
             other.transform.position = new Vector2(999, 999);
-            puntuacion += 40;
-            textoPuntuacion.text = "Puntuación: " + puntuacion;
+            GameManager.puntuacion += 40;
+            textoPuntuacion.text = "Puntuación: " + GameManager.puntuacion;
             vidas++;
             contadorVidas.text = vidas + " X";
             fuenteDeAudio.clip = powerUps;
             fuenteDeAudio.Play();
         }
     }
+
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
@@ -198,6 +271,22 @@ public class Jugador : MonoBehaviour
             fuenteDeAudio.Play();
             bajarVida();
             transform.position = new Vector2(-7.75f, -1.64f);
+        }
+		if (collision.gameObject.CompareTag("Enemigo2"))
+        {
+			fuenteDeAudio.clip = tocarEnemigo;
+            fuenteDeAudio.Play();
+			if(!matar){
+				bajarVida();
+			  //  Destroy(collision);
+				GameManager.puntuacion -= 20;
+				transform.position = new Vector2(-7.75f, -1.64f);
+			}else{
+				GameManager.puntuacion += 50;
+				GameManager.ContadorEnemigos++;
+			}
+			textoPuntuacion.text = "Puntuación: " + GameManager.puntuacion;
+            
         }
     }
 
@@ -254,6 +343,9 @@ public class Jugador : MonoBehaviour
         {
             vivo = false;
         }
+
+		
+
     }
 
     void teletransporte()
@@ -296,6 +388,8 @@ public class Jugador : MonoBehaviour
         SceneManager.LoadScene("Inicio");
 
     }
+
+	
 
     
 
