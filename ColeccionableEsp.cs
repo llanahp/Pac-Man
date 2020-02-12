@@ -21,11 +21,12 @@ public class ColeccionableEsp : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (ColeccionableEsp.reaparecer)
-            {
+		
+		 transform.Rotate(new Vector3(0, 0, 45) * Time.deltaTime);
+        if (ColeccionableEsp.reaparecer){
 				int aleatorio = Random.Range(0,6);
 				ColeccionableEsp.reaparecer = false;
                transform.position = new Vector2(posicionX4[aleatorio], posicionY4[aleatorio]);
-            }
+        }
     }
 }

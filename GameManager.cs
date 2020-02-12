@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -15,6 +16,14 @@ public class GameManager : MonoBehaviour
 	private int contador = 1;
 
 	public static int ContadorEnemigos, ContadorColeccionable, puntuacion;
+	 public static float tiempo = 150;
+	 
+	[SerializeField]
+    private Button Salir, Pausa, Home;
+	 [SerializeField]
+    private Sprite sptPausa, sptPlay;
+
+
 	
 
 
@@ -26,10 +35,24 @@ public class GameManager : MonoBehaviour
 		ContadorColeccionable = 0;
 		ContadorEnemigos = 0;
 		puntuacion = 0;
+
+		Button btn = Salir.GetComponent<Button>();
+        btn.onClick.AddListener(Cerrar);
+
+        Button btnPausa = Pausa.GetComponent<Button>();
+        btnPausa.onClick.AddListener(pausar);
+
+
+        Button btnHome = Home.GetComponent<Button>();
+        btnHome.onClick.AddListener(home);
 		
 	}
 	void Update(){
 		if(!Jugador.vivo){
+			SceneManager.LoadScene("Final");
+		}
+		if(tiempo <0.0f){
+			Time.timeScale = 0;	
 			SceneManager.LoadScene("Final");
 		}
 	}
@@ -59,6 +82,32 @@ public class GameManager : MonoBehaviour
         }
     }
 
+	    void Cerrar(){
+        Application.Quit();
+    }
 
+    void pausar()
+    {
+
+        if (Pausa.GetComponent<Image>().sprite == sptPausa)//Pausa
+        {
+           // Pausado.enabled = true;
+            Pausa.GetComponent<Image>().sprite = sptPlay;
+            Time.timeScale = 0;
+        }
+        else
+        {//play
+            //Pausado.enabled = false;
+            Pausa.GetComponent<Image>().sprite = sptPausa;
+            Time.timeScale = 1;
+        }
+
+    }
+
+    void home()
+    {
+        SceneManager.LoadScene("Inicio");
+
+    }
 	
 }

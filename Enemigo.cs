@@ -9,6 +9,7 @@ public class Enemigo : MonoBehaviour
     GameObject jugador;
     public float moveSpeed = 0.5f;
     private Rigidbody2D rb;
+	
 
     // Start is called before the first frame update
     void Start()
@@ -24,8 +25,12 @@ public class Enemigo : MonoBehaviour
     }
     private void FixedUpdate()
     {
-
-        transform.position = Vector2.MoveTowards(transform.position, jugador.transform.position, moveSpeed * Time.deltaTime);
+		if(!Jugador.Huir){
+			transform.position = Vector2.MoveTowards(transform.position, jugador.transform.position, moveSpeed * Time.deltaTime);
+		}else{
+			transform.position = Vector2.MoveTowards(transform.position, -jugador.transform.position, moveSpeed * Time.deltaTime);
+		}
+        
 
     }
     private void OnCollisionEnter2D(Collision2D collision)

@@ -6,27 +6,19 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 public class Jugador : MonoBehaviour
 {
-    [SerializeField]
-    private Text Cronometro;
-    private float StartTime;
 
     [SerializeField]
     private Image corazon2;
 
     [SerializeField]
-    private Text contadorVidas, textoPuntuacion;
+    private Text contadorVidas;
 
     float velocidad = 5;
     private Rigidbody2D rb;
 
-    private int vidas = 2, corazones = 2;
+    public static int vidas = 2, corazones = 2;
     public static bool vivo = true;
-
-    //int puntuacion = 0;
-
-
-    public static string minutos, segundos;
-    public static float tiempo = 150;
+   
     //colecionable
     public static int ColecionablesRecogidos = 0;
     public static bool col1 = false;
@@ -37,14 +29,13 @@ public class Jugador : MonoBehaviour
 	// Coleccionable especial variables utilizadas
 
 	private bool matar = false;
+	public static bool Huir = false;
 	string segundosComiendo;
-
 
 
     public static int posicion = 0;
     private static bool relentizado = false;
     string segundoRelentizado;
-
 
 
     //Audio Source
@@ -53,25 +44,11 @@ public class Jugador : MonoBehaviour
     [SerializeField]
     private AudioClip recolectarMoneda, powerUps, trampa, tocarEnemigo;
 
-    [SerializeField]
-    private Button Salir, Pausa, Home;
-    //sprites
-    [SerializeField]
-    private Sprite sptPausa, sptPlay;
-
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        Button btn = Salir.GetComponent<Button>();
-        btn.onClick.AddListener(Cerrar);
-
-        Button btnPausa = Pausa.GetComponent<Button>();
-        btnPausa.onClick.AddListener(pausar);
-
-
-        Button btnHome = Home.GetComponent<Button>();
-        btnHome.onClick.AddListener(home);
+      
         fuenteDeAudio = GetComponent<AudioSource>();
 
 		 color = GetComponent<SpriteRenderer>().color;
@@ -80,7 +57,7 @@ public class Jugador : MonoBehaviour
 
     void relentizar()
     {
-        int total = int.Parse(segundos) + 5;
+        int total = int.Parse(Hud.segundos) + 5;
         if (total.Equals(int.Parse(segundoRelentizado)))
         {
             velocidad = 5;
@@ -89,8 +66,6 @@ public class Jugador : MonoBehaviour
     }
     private void Update()
     {
-        tiempo -= Time.deltaTime;
-        minutosSegundos(tiempo);
         if (relentizado)
         {
             velocidad = 2;
@@ -98,12 +73,8 @@ public class Jugador : MonoBehaviour
         }
         else
         {
-            segundoRelentizado = segundos;
+            segundoRelentizado = Hud.segundos;
         }
-
-
-		
-
 
     }
     void FixedUpdate()
@@ -147,8 +118,7 @@ public class Jugador : MonoBehaviour
 			Matar();
 
 		}else{
-			segundosComiendo = segundos;
-
+			segundosComiendo = Hud.segundos;
 		}
 
 
@@ -156,12 +126,13 @@ public class Jugador : MonoBehaviour
 
 	void Matar(){
 
-		int total = int.Parse(segundos) + 5;
+		int total = int.Parse(Hud.segundos) + 5;
         if (total.Equals(int.Parse(segundosComiendo)))
         {
 
             matar = false;
 			ColeccionableEsp.reaparecer = true;
+			Jugador.Huir = false;
 			GetComponent<SpriteRenderer>().color = color;
 			
         }
@@ -186,9 +157,7 @@ public class Jugador : MonoBehaviour
                 ColecionablesRecogidos = 0;
             }
             GameManager.puntuacion += 10;
-            textoPuntuacion.text = "Puntuación: " + GameManager.puntuacion;
             other.transform.position = new Vector2(999, 999);
-
 			GameManager.ContadorColeccionable++;
         }
 
@@ -196,13 +165,12 @@ public class Jugador : MonoBehaviour
         {
             fuenteDeAudio.clip = recolectarMoneda;
             fuenteDeAudio.Play();
-
 			GetComponent<SpriteRenderer>().color = new Color(1,1,1);
 			matar = true;
-
+			Jugador.Huir  = true;
 
             GameManager.puntuacion += 100;
-            textoPuntuacion.text = "Puntuación: " + GameManager.puntuacion;
+           
             other.transform.position = new Vector2(999, 999);
 
 			GameManager.ContadorColeccionable++;
@@ -225,7 +193,7 @@ public class Jugador : MonoBehaviour
 				other.transform.position = new Vector2(999,999);
 				GameManager.ContadorEnemigos++;
 			}
-			textoPuntuacion.text = "Puntuación: " + GameManager.puntuacion;
+			
 
 			
             
@@ -235,7 +203,7 @@ public class Jugador : MonoBehaviour
             
             other.transform.position = new Vector2(999, 999);
             GameManager.puntuacion -= 20;
-            textoPuntuacion.text = "Puntuación: " + GameManager.puntuacion;
+            
             relentizado = true;
             fuenteDeAudio.clip = trampa;
             fuenteDeAudio.Play();
@@ -244,7 +212,7 @@ public class Jugador : MonoBehaviour
         {
             other.transform.position = new Vector2(999, 999);
             GameManager.puntuacion -= 40;
-            textoPuntuacion.text = "Puntuación: " + GameManager.puntuacion;
+           
             bajarVida();
             fuenteDeAudio.clip = trampa;
             fuenteDeAudio.Play();
@@ -253,7 +221,7 @@ public class Jugador : MonoBehaviour
         {
             other.transform.position = new Vector2(999, 999);
             GameManager.puntuacion += 40;
-            textoPuntuacion.text = "Puntuación: " + GameManager.puntuacion;
+            
             vidas++;
             contadorVidas.text = vidas + " X";
             fuenteDeAudio.clip = powerUps;
@@ -285,43 +253,12 @@ public class Jugador : MonoBehaviour
 				GameManager.puntuacion += 50;
 				GameManager.ContadorEnemigos++;
 			}
-			textoPuntuacion.text = "Puntuación: " + GameManager.puntuacion;
+			
             
         }
     }
 
-    void minutosSegundos(float tiempo)
-    {
-
-        //Minutos
-        if (tiempo > 120)
-        {
-            minutos = "02";
-        }
-        else if (tiempo >= 60)
-        {
-            minutos = "01";
-        }
-        else
-        {
-            minutos = "00";
-        }
-
-        //Segundos
-        int numSegundos = Mathf.RoundToInt(tiempo % 60);
-        if (numSegundos > 9)
-        {
-            segundos = numSegundos.ToString();
-        }
-        else
-        {
-            segundos = "0" + numSegundos.ToString();
-        }
-
-        //Escribo en la caja de texto
-        Cronometro.text = minutos + ":" + segundos;
-
-    }
+   
 
     void bajarVida()
     {
@@ -337,15 +274,11 @@ public class Jugador : MonoBehaviour
             vidas--;
             contadorVidas.text = vidas + " X";
         }
-
-
         if (vidas == 0)
         {
             vivo = false;
+			corazon2.enabled = false;
         }
-
-		
-
     }
 
     void teletransporte()
@@ -359,41 +292,5 @@ public class Jugador : MonoBehaviour
             transform.position = new Vector2(-8.22f, -0.3035613f);
         }
     }
-
-    void Cerrar()
-    {
-        Application.Quit();
-    }
-
-    void pausar()
-    {
-
-        if (Pausa.GetComponent<Image>().sprite == sptPausa)//Pausa
-        {
-           // Pausado.enabled = true;
-            Pausa.GetComponent<Image>().sprite = sptPlay;
-            Time.timeScale = 0;
-        }
-        else
-        {//play
-            //Pausado.enabled = false;
-            Pausa.GetComponent<Image>().sprite = sptPausa;
-            Time.timeScale = 1;
-        }
-
-    }
-
-    void home()
-    {
-        SceneManager.LoadScene("Inicio");
-
-    }
-
-	
-
-    
-
-    
-
 
 }

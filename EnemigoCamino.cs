@@ -34,8 +34,7 @@ public class EnemigoCamino : MonoBehaviour
 		
 
 		if(waypointindex == wpoints.waypoints.Length){
-			waypointindex = 0;
-			
+			waypointindex = 0;	
 		}
     }
 }
