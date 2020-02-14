@@ -31,7 +31,36 @@ public class Hud : MonoBehaviour
 
     }
 
+ void minutosSegundos(float tiempo)
+    {
+        //Minutos
+        if (tiempo > 120)
+        {
+            minutos = "02";
+        }
+        else if (tiempo >= 60)
+        {
+            minutos = "01";
+        }
+        else
+        {
+            minutos = "00";
+        }
 
+        //Segundos
+        int numSegundos = Mathf.RoundToInt(tiempo % 60);
+        if (numSegundos > 9)
+        {
+            segundos = numSegundos.ToString();
+        }
+        else
+        {
+            segundos = "0" + numSegundos.ToString();
+        }
+
+        //Escribo en la caja de texto
+        Cronometro.text = minutos + ":" + segundos;
+    }
 	
 
 
