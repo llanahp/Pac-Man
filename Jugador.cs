@@ -28,7 +28,7 @@ public class Jugador : MonoBehaviour
 
 	// Coleccionable especial variables utilizadas
 
-	private bool matar = false;
+	public static bool matar = false;
 	public static bool Huir = false;
 	string segundosComiendo;
 
@@ -57,8 +57,8 @@ public class Jugador : MonoBehaviour
 
     void relentizar()
     {
-        int total = int.Parse(Hud.segundos) + 5;
-        if (total.Equals(int.Parse(segundoRelentizado)))
+        int total = (int)GameManager.tiempo + 5;
+		if (total.Equals(int.Parse(segundoRelentizado)))
         {
             velocidad = 5;
             relentizado = false;
@@ -73,7 +73,7 @@ public class Jugador : MonoBehaviour
         }
         else
         {
-            segundoRelentizado = Hud.segundos;
+            segundoRelentizado = (int) GameManager.tiempo + "";
         }
 
     }
@@ -108,6 +108,7 @@ public class Jugador : MonoBehaviour
         if (!vivo)
         {
             Time.timeScale = 0;
+			GameManager.cambioEscena("Final");
         }
 
         teletransporte();
@@ -118,7 +119,7 @@ public class Jugador : MonoBehaviour
 			Matar();
 
 		}else{
-			segundosComiendo = Hud.segundos;
+			segundosComiendo =(int) GameManager.tiempo + "";
 		}
 
 
@@ -126,8 +127,8 @@ public class Jugador : MonoBehaviour
 
 	void Matar(){
 
-		int total = int.Parse(Hud.segundos) + 5;
-        if (total.Equals(int.Parse(segundosComiendo)))
+		int total = (int)GameManager.tiempo + 5;
+		if (total.Equals(int.Parse(segundosComiendo)))
         {
 
             matar = false;
@@ -136,7 +137,6 @@ public class Jugador : MonoBehaviour
 			GetComponent<SpriteRenderer>().color = color;
 			
         }
-	
 	}
 
     // Se ejecuta al entrar a un objeto con la opción isTrigger seleccionada
@@ -190,8 +190,8 @@ public class Jugador : MonoBehaviour
 				
 				GameManager.puntuacion += 50;
 				Vector2 actual = other.transform.position;
-				other.transform.position = new Vector2(999,999);
 				GameManager.ContadorEnemigos++;
+
 			}
 			
 

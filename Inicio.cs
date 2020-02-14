@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
+using System;
 
 
 public class Inicio : MonoBehaviour
@@ -42,7 +43,7 @@ public class Inicio : MonoBehaviour
     {
         if (email.text == "" || contra.text == "")
         {
-            //SceneManager.LoadScene("Juego");
+            texto.text="Rellena los campos";
         }
         else
         {
@@ -56,7 +57,7 @@ public class Inicio : MonoBehaviour
     {
         WWWForm form = new WWWForm();
         form.AddField("usuario", usuario.Getusuario());
-        //form.AddField("clave", usuario.Getclave());
+        form.AddField("clave", usuario.Getclave());
 
         using (UnityWebRequest webRequest = UnityWebRequest.Post(urlNoticias, form))
         {
@@ -64,21 +65,34 @@ public class Inicio : MonoBehaviour
 
             if (webRequest.isNetworkError || webRequest.isHttpError)
             {
-                // textoError.text = webRequest.error;
+             
                 texto.text = "error";
 
             }
             else if (webRequest.downloadHandler.text == "no")
             {
-                //textoError.text = "Usuario no autorizado";
-                texto.text = "no";
+                
+                texto.text = "Usuario no autorizado";
             }
             else
             {
                 texto.text = "si";
-                //SceneManager.LoadScene("Juego");
+                SceneManager.LoadScene("Juego");
                 string jsonResponse = webRequest.downloadHandler.text;
-                EnviarPuntuacion[] juegos = JsonHelper.getJsonArray<EnviarPuntuacion>(jsonResponse);
+                //GameManager.juegos = JsonHelper.getJsonArray<EnviarPuntuacion>(jsonResponse);
+					
+					/*--------------------------------------------------------------------------------*/
+					// lo que faltqa lo de web
+					GameManager.juegos = new EnviarPuntuacion[3];
+
+					EnviarPuntuacion p1  = new EnviarPuntuacion(usuario.Getusuario(),DateTime.Today.ToString(),540,139);
+					EnviarPuntuacion p2  = new EnviarPuntuacion(usuario.Getusuario(),DateTime.Today.ToString(),600,39);
+					EnviarPuntuacion p3  = new EnviarPuntuacion(usuario.Getusuario(),DateTime.Today.ToString(),700,39);
+
+					GameManager.juegos[0] = p2;
+					GameManager.juegos[1] = p1;
+					GameManager.juegos[2] = p3;
+
             }
         }
     }

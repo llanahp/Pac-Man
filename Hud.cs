@@ -11,7 +11,7 @@ public class Hud : MonoBehaviour
     private float StartTime;
 
     [SerializeField]
-    private Text contadorVidas, textoPuntuacion;
+    private Text contadorVidas, textoPuntuacion, textMaximaPuntuacion;
 	
 	public static string minutos, segundos;
 
@@ -19,6 +19,7 @@ public class Hud : MonoBehaviour
     void Start()
     {
          textoPuntuacion.text = "Puntuación: " + GameManager.puntuacion;
+		 textMaximaPuntuacion.text ="Máxima puntuación: "+ GameManager.juegos[0].GetPuntuacion().ToString();
     }
 
     // Update is called once per frame
@@ -31,7 +32,8 @@ public class Hud : MonoBehaviour
 
     }
 
- void minutosSegundos(float tiempo)
+
+	 void minutosSegundos(float tiempo)
     {
         //Minutos
         if (tiempo > 120)
@@ -61,7 +63,6 @@ public class Hud : MonoBehaviour
         //Escribo en la caja de texto
         Cronometro.text = minutos + ":" + segundos;
     }
-	
 
 
 
