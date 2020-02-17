@@ -12,6 +12,8 @@ public class GameManager : MonoBehaviour
 
 	public static EnviarPuntuacion[] juegos;
 
+	public static string usuario="";
+
 	void Start() {  
 
 	

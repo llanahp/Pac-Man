@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Networking;
+using UnityEngine.SceneManagement;
 using System;
 
 public class PutuacionPartida : MonoBehaviour
@@ -17,11 +19,14 @@ public class PutuacionPartida : MonoBehaviour
 	[SerializeField]
 	Text txtPuntuacion1, txtPuntuacion2, txtPuntuacion3;
 
+	string urlEnviarPartida = "";
+	private static string minutos, segundos;
+
     // Start is called before the first frame update
     void Start()
     {
-
 		ImprimirPartidas();
+		//StartCoroutine(EnviarPartida());
     }
 
     // Update is called once per frame
@@ -34,12 +39,9 @@ public class PutuacionPartida : MonoBehaviour
         fecha.text = DateTime.Today.ToString();
         putuacion.text = GameManager.puntuacion.ToString();
 		
-
-
-
     }
 
-    private static string minutos, segundos;
+    
 
     String minutosSegundos(float tiempo)
     {
@@ -82,8 +84,22 @@ public class PutuacionPartida : MonoBehaviour
 		txtPuntuacion2.text = GameManager.juegos[1].GetPuntuacion().ToString();
 		txtPuntuacion3.text = GameManager.juegos[2].GetPuntuacion().ToString();
 
-
-
 	}
+
+	IEnumerator EnviarPartida()
+    {
+        WWWForm form = new WWWForm();
+        form.AddField("usuario", GameManager.usuario);
+        form.AddField("Puntos", GameManager.puntuacion.ToString());
+        form.AddField("fecha", DateTime.Today.ToString());
+
+
+        using (UnityWebRequest webRequest = UnityWebRequest.Post(urlEnviarPartida, form))
+        {
+            yield return webRequest.SendWebRequest();
+
+           
+        }
+    }
 
 }

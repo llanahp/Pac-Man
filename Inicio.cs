@@ -78,6 +78,7 @@ public class Inicio : MonoBehaviour
             {
                 texto.text = "si";
                 SceneManager.LoadScene("Juego");
+				GameManager.usuario=usuario.Getusuario();
                 string jsonResponse = webRequest.downloadHandler.text;
                 //GameManager.juegos = JsonHelper.getJsonArray<EnviarPuntuacion>(jsonResponse);
 					
